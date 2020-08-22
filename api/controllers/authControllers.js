@@ -15,39 +15,7 @@
  * 10. password_reset_handler_post
  * 11. delete_account_email_post
  * 12. delete_account_get
- * 13. delete_accountNP
-insert_chart
-hours watched
-0
-last 12 months
-views
-0
-last 60 minutes
-views
-0
-last 48 hours
-views
-0▾
-0%
-last 7 days
-minutes watched
-0▾
-0%
-last 7 days
-subscribers
-5
-subscribers
-
-average minutes watched
-0:00▾
-0%
-View all analytics for your channel
-
-Want to improve your views?
-
-Check out vidIQ Boost
-💙 vidIQ? Review us! 📝
-_handler_post
+ * 13. delete_account_handler_post
  */
 
 // require("dotenv").config({path: ''});

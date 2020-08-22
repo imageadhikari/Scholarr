@@ -18,6 +18,9 @@ dotenv.config({ path: "./config/config.env" }); // loading environment variables
 connectDB(); // Database connection
 
 const app = express(); // Express app
+
+app.use(express.static(`${__dirname}/public/upload`));
+
 app.use(express.json()); // Middleware for parsing requests into JSON format and store in req.body
 app.use(morgan("dev")); // Logger for requests
 app.use(cors()); // Cross origin enabler

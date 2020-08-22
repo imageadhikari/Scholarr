@@ -85,12 +85,12 @@ module.exports.confirmEmailSender = async (req, user, token) => {
                     Dear <strong>${user.username}</strong>,<br />
                     Please confirm <strong>'${user.email}'</strong> as your email by clicking the following
                     link:<br />
-                    <a href="http:\/\/${req.headers.host}\/api\/user\/confirmation\/${token.token}">
+                    <a href="http:\/\/${req.headers.host}\/api\/auth\/confirmation\/${token.token}">
                       <strong>Click here</strong></a
                     ><br />
                     Or, copy the following link into your browser:<br />
                     <strong>
-                      http:\/\/${req.headers.host}\/api\/user\/confirmation\/${token.token}
+                      http:\/\/${req.headers.host}\/api\/auth\/confirmation\/${token.token}
                     </strong>
                     <br /><br />
                     Sincerely,
@@ -183,13 +183,13 @@ module.exports.resetPasswordEmailSender = async (req, user, token) => {
                         <strong>Scholarr</strong> account <strong>'${user.email}'</strong> has been issued. Please click
                         the following link to reset your password<br />
                         <a
-                            href="http:\/\/${req.headers.host}\/api\/user\/reset_password\/${token.token}"
+                            href="http:\/\/${req.headers.host}\/api\/auth\/reset_password\/${token.token}"
                         >
                             <strong>Click here</strong></a
                         ><br />
                         Or, copy the following link into your browser:<br />
                         <strong>
-                            http:\/\/${req.headers.host}\/api\/user\/reset_password\/${token.token}
+                            http:\/\/${req.headers.host}\/api\/auth\/reset_password\/${token.token}
                         </strong><br/>
                         If this was not done by you, please secure you account.
                         <br /><br />
@@ -283,13 +283,13 @@ module.exports.deleteAccountEmailSender = async (req, user, token) => {
                         A request for deletion of your
                         <strong>Scholarr</strong> account <strong>'${user.email}'</strong> has been issued. Please click
                         the following link to delete your account.<a
-                            href="http:\/\/${req.headers.host}\/api\/user\/delete_account\/${token.token}"
+                            href="http:\/\/${req.headers.host}\/api\/auth\/delete_account\/${token.token}"
                         >
                             <strong>Click here</strong></a
                         >.<br />
                         Or, copy the following link into your browser:<br />
                         <strong>
-                            http:\/\/${req.headers.host}\/api\/user\/delete_account\/${token.token}
+                            http:\/\/${req.headers.host}\/api\/auth\/delete_account\/${token.token}
                         </strong><br/>
                         If this was not done by you, please secure your account. However, if not the case We hope you had a wonderful time using our services. We feel obliged to have been of use and wish to see you here again. Have a nice day!
                         <br /><br />

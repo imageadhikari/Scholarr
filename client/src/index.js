@@ -6,10 +6,10 @@ import * as serviceWorker from "./serviceWorker";
 
 // Rendering App component
 ReactDOM.render(
-    <React.StrictMode>
-        <App />
-    </React.StrictMode>,
-    document.getElementById("root")
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById("root")
 );
 
 // For offline mode and faster loading (throught cache), change following setting

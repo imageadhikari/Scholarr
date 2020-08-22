@@ -5,7 +5,7 @@ const Joi = require("joi");
 // REGISTER
 module.exports.registerValidation = (data) => {
 	const schema = {
-		username: Joi.string().min(6).required(),
+		username: Joi.string().min(5).required(),
 		email: Joi.string().min(6).email().required(),
 		password: Joi.string().min(8).required(),
 	};
@@ -50,17 +50,16 @@ module.exports.deleteAccountValidation = (data) => {
 
 //
 //
-// CREATE PROFILE
+// UPDATE user
 module.exports.updateUserValidation = (data) => {
 	const schema = {
+		_id: Joi.string().required(),
 		firstName: Joi.string().max(100),
 		middleName: Joi.string().max(100),
 		lastName: Joi.string().max(100),
 		bio: Joi.string().max(1000),
 		password: Joi.string().min(8).required(),
 		dateOfBirth: Joi.date(),
-		// avatarPicture: Joi.string(),
-		// coverPicture: Joi.string(),
 	};
 
 	return Joi.validate(data, schema);

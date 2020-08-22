@@ -2,6 +2,27 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const { updateUserValidation } = require("../middleware/validation");
+// const { findOneUser } = require("../middleware/utilityFunctions");
+const { upload, imagesUpload } = require("../middleware/fileUpload");
+
+// const multer = require("multer");
+// const path = require("path");
+
+// const storage = multer.diskStorage({
+// 	destination: `${__dirname}/public/upload`,
+// 	filename: function (req, file, cb) {
+// 		cb(
+// 			null,
+// 			req.user._id + "-" + file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+// 			//this will result in the filename of uploaded file as `[id of user]-[fieldname ie avatar or cover]-timestamp.extension`
+// 		);
+// 	},
+// });
+
+// const upload = multer({ storage: storage }).fields([
+// 	{ name: "avatar", maxCount: 1 },
+// 	{ name: "cover", maxCount: 1 },
+// ]);
 
 //
 //
@@ -41,11 +62,15 @@ module.exports.users_get = async (req, res) => {
 // GET User Details
 module.exports.user_detail_get = async (req, res) => {
 	try {
-		const userExists = await User.findOne({ username: req.params.username });
+		// const userExists = await findOneUser(req.params.userId);
+		const userExists = await User.findOne({ _id: req.params.userId });
 		if (!userExists)
 			throw {
-				type: "Non-existence",
-				message: "The user does not exist",
+				error: {
+					status: 404,
+					type: "Non-existence",
+					message: "The user does not exist",
+				},
 			};
 
 		const user = {
@@ -68,7 +93,7 @@ module.exports.user_detail_get = async (req, res) => {
 
 /** //* Controls PROFILE UPDATE PATCH requests.
  *
- * PUT form-body: { firstName: , middleName: , lastName: , bio: , dateOfBirth: , password: , avatarImage: , coverImage: ,}
+ * PATCH body: { _id: , firstName: , middleName: , lastName: , bio: , dateOfBirth: , password: ,}
  */
 module.exports.update_user_patch = async (req, res) => {
 	try {
@@ -82,7 +107,7 @@ module.exports.update_user_patch = async (req, res) => {
 
 		// console.log(req.user);
 
-		const userFound = await User.findOne({ _id: req.user._id });
+		const userFound = await User.findOne({ _id: req.params.userId });
 		if (!userFound)
 			throw {
 				error: {
@@ -91,7 +116,7 @@ module.exports.update_user_patch = async (req, res) => {
 				},
 			};
 
-		// Check if req user is owner of the user account
+		// Check if req user is owner of the user account to be updated
 		if (req.user._id != userFound._id)
 			throw {
 				error: {
@@ -101,6 +126,7 @@ module.exports.update_user_patch = async (req, res) => {
 				},
 			};
 
+		//check password
 		const validPass = await bcrypt.compare(req.body.password, userFound.password);
 		if (!validPass)
 			throw {
@@ -115,6 +141,7 @@ module.exports.update_user_patch = async (req, res) => {
 				query.$set[key] = req.body[key]; // creates a $set object with keys that have different values
 		}
 
+		// update the profile
 		const updatedProfile = await User.updateOne(
 			{
 				_userId: req.user._id,
@@ -122,13 +149,59 @@ module.exports.update_user_patch = async (req, res) => {
 			query //using $set method here to update values
 		);
 
-		console.log(updatedProfile);
+		// console.log(updatedProfile);
 
 		return res.status(200).send({
 			Success: {
 				status: 200,
-				message: "Profile successfully created",
+				message: "Profile successfully updated",
 			},
+		});
+	} catch (err) {
+		console.error(err);
+		return res.status(400).send(err);
+	}
+};
+
+/**
+ * //* controls the USER IMAGE UPLOAD PATCH request
+ *
+ * PATCH method : multipart/form-data  [Since we're dealing with files, JSON is not usable]
+ *
+ * PATCH form body [key->file i.e. a key which coreesponds to "name" field in html input]
+ * @key_1 avatar - for the profile picture or avatar
+ * @key_2 cover - for the coverimage
+ *
+ */
+module.exports.upload_user_images_patch = async (req, res) => {
+	try {
+		const userFound = await User.findOne({ _id: req.params.userId });
+		if (!userFound)
+			throw {
+				error: {
+					status: 404,
+					message: "associated user not found",
+				},
+			};
+
+		if (req.user._id != userFound._id)
+			throw {
+				error: {
+					status: 401,
+					type: "Access Denied!",
+					message: "You do not have permission to edit this!",
+				},
+			};
+
+		// console.log(req.files);
+		imagesUpload(req, res, (err) => {
+			console.log(req);
+			if (err) {
+				return res.status(400).send(err);
+			} else {
+				console.log(req.files);
+				res.send("yahoo");
+			}
 		});
 	} catch (err) {
 		console.error(err);
