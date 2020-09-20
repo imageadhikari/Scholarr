@@ -1,45 +1,52 @@
 {
-  "name": "scholarr",
-  "version": "0.1.0",
-  "description": "Online Classroom utility platform",
-  "main": "index.js",
-  "scripts": {
-    "client-install": "npm install --prefix client",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
-    "server": "nodemon server.js",
-    "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run client\" \"npm run server\""
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/imageadhikari/Scholarr.git"
-  },
-  "keywords": [
-    "virtual",
-    "classroom"
-  ],
-  "author": "The Godfathers",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/imageadhikari/Scholarr/issues"
-  },
-  "homepage": "https://github.com/imageadhikari/Scholarr#readme",
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "joi": "^14.3.1",
-    "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.9.22",
-    "multer": "^1.4.2",
-    "nodemailer": "^6.4.10",
-    "socket.io": "^2.3.0"
-  },
-  "devDependencies": {
-    "morgan": "^1.10.0",
-    "concurrently": "^5.2.0",
-    "nodemon": "^2.0.4"
-  }
+	"name": "scholarr",
+	"version": "0.1.0",
+	"description": "Online Classroom utility platform",
+	"main": "index.js",
+	"scripts": {
+		"client-install": "npm install --prefix client",
+		"start": "node server.js",
+		"server": "nodemon server.js",
+		"client": "npm start --prefix client",
+		"dev": "concurrently \"npm run client\" \"npm run server\"",
+		"killport": "sudo kill -9 `sudo lsof -t -i:4000`",
+		"test": "jest",
+		"test:watch": "jest --watch"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/imageadhikari/Scholarr.git"
+	},
+	"keywords": [
+		"virtual",
+		"classroom"
+	],
+	"author": "The Godfathers",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/imageadhikari/Scholarr/issues"
+	},
+	"homepage": "https://github.com/imageadhikari/Scholarr#readme",
+	"dependencies": {
+		"bcryptjs": "^2.4.3",
+		"cors": "^2.8.5",
+		"dotenv": "^8.2.0",
+		"express": "^4.17.1",
+		"joi": "^17.2.1",
+		"jsonwebtoken": "^8.5.1",
+		"mongoose": "^5.9.22",
+		"multer": "^1.4.2",
+		"nodemailer": "^6.4.10",
+		"socket.io": "^2.3.0"
+	},
+	"devDependencies": {
+		"concurrently": "^5.2.0",
+		"jest": "^26.4.2",
+		"morgan": "^1.10.0",
+		"nodemon": "^2.0.4",
+		"supertest": "^4.0.2"
+	},
+	"jest": {
+		"testEnvironment": "node"
+	}
 }

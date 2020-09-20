@@ -14,7 +14,7 @@ const tokenSchema = mongoose.Schema({
 	_userId: {
 		type: mongoose.Schema.Types.ObjectId,
 		required: true,
-		ref: User,
+		ref: "User",
 	},
 	token: {
 		type: String,
@@ -28,7 +28,7 @@ const tokenSchema = mongoose.Schema({
 		type: Date,
 		required: true,
 		default: Date.now,
-		expires: 3600,
+		expires: 600,
 	},
 });
 

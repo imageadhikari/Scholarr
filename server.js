@@ -22,7 +22,9 @@ const app = express(); // Express app
 app.use(express.static(`${__dirname}/public/upload`));
 
 app.use(express.json()); // Middleware for parsing requests into JSON format and store in req.body
-app.use(morgan("dev")); // Logger for requests
+
+if (process.env.NODE_ENV === "dev") app.use(morgan("dev")); // Logger for requests
+
 app.use(cors()); // Cross origin enabler
 
 // ROUTES ---
@@ -50,3 +52,5 @@ video.on("connection", (socket) =>
 	console.log(`Socket connection made. Namespace:VideoChat, ID: ${socket.id}`)
 );
 // sockets ---
+
+module.exports = server;

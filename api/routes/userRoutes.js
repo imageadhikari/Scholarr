@@ -1,18 +1,48 @@
 const userRouter = require("express").Router();
 const userController = require("../controllers/userControllers");
-const { privateVerify } = require("../middleware/privateVerify");
+const { loggedInVerify } = require("../middleware/verification");
 const { imagesUpload } = require("../middleware/fileUpload");
+const { accountOwnerVerify } = require("../middleware/verification");
+
 //
 //
-// userRouter request methods
-userRouter.get("/", userController.users_get);
-userRouter.get("/:userId", userController.user_detail_get);
-userRouter.patch("/:userId/profile/edit", privateVerify, userController.update_user_patch);
+//* userRouter request methods
+
+// ? READ
+
+userRouter.get("/", loggedInVerify, userController.users_get); //!
+
+userRouter.get("/:userId", loggedInVerify, userController.user_detail_get); //!
+
+userRouter.get(
+	"/:userId/private",
+	loggedInVerify,
+	accountOwnerVerify,
+	userController.user_detail_private_get
+); //!
+
+// ? CREATE
+
+userRouter.post("/group_users", userController.group_users_post); //!
+
+// ? UPDATE
+
+userRouter.patch(
+	"/:userId/profile/edit",
+	loggedInVerify,
+	accountOwnerVerify,
+	userController.update_user_patch
+); //!
+
 userRouter.patch(
 	"/:userId/image/upload",
-	privateVerify,
+	loggedInVerify,
 	imagesUpload,
 	userController.upload_user_images_patch
 );
+
+// TODO FILE UPLOAD HANDLING
+
+// ? EXPORTS
 
 module.exports = userRouter;

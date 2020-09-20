@@ -8,6 +8,6 @@ module.exports.findOneUser = async (_userId) => {
 		const userFound = await User.findOne({ _id: _userId });
 		return userFound;
 	} catch (err) {
-		console.error(err);
+		if (process.env.NODE_ENV === "dev") console.error(err);
 	}
 };

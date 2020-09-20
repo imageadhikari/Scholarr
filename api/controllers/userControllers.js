@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const { updateUserValidation } = require("../middleware/validation");
 // const { findOneUser } = require("../middleware/utilityFunctions");
 const { upload, imagesUpload } = require("../middleware/fileUpload");
+const { wrongPwError, validationError, nonExistenceError } = require("../utils/errorMessages");
 
 // const multer = require("multer");
 // const path = require("path");
@@ -32,12 +33,9 @@ module.exports.users_get = async (req, res) => {
 	try {
 		// const users = await User.find(); // Good only for small userbase
 
-		// for millions of users use cursor method
+		// for millions of users and customized use async iterator method method
 		const users = [];
-		const cursor = User.find().cursor();
-		// console.log(cursor);
-
-		for (let doc = await cursor.next(); doc != null; doc = await cursor.next()) {
+		for await (const doc of User.find()) {
 			users.push({
 				_id: doc._id,
 				username: doc.username,
@@ -52,7 +50,46 @@ module.exports.users_get = async (req, res) => {
 
 		return res.send(users);
 	} catch (err) {
-		console.error(err);
+		if (process.env.NODE_ENV === "dev") console.error(err);
+		return res.status(400).send(err);
+	}
+};
+
+//
+//
+// POST group of users
+/**
+ *
+ * POST body: { userGroup: [_id1, _id2, _id3, ...],}
+ */
+module.exports.group_users_post = async (req, res) => {
+	try {
+		const users = await User.find({ _id: { $in: req.body.userGroup } });
+		if (!users)
+			throw {
+				error: {
+					status: 404,
+					type: "Non-existence",
+					message: "No Users found for given array of ids",
+				},
+			};
+
+		const group = [];
+		for (let doc of users)
+			group.push({
+				_id: doc._id,
+				username: doc.username,
+				email: doc.email,
+				displayName: `${doc.firstName} ${doc.lastName}`,
+				dateOfBirth: doc.dateOfBirth,
+				bio: doc.bio,
+				avatarImage: doc.avatarImage,
+				coverImage: doc.coverImage,
+			});
+
+		return res.status(200).send(group);
+	} catch (err) {
+		if (process.env.NODE_ENV === "dev") console.error(err);
 		return res.status(400).send(err);
 	}
 };
@@ -60,6 +97,26 @@ module.exports.users_get = async (req, res) => {
 //
 //
 // GET User Details
+module.exports.user_detail_private_get = async (req, res) => {
+	try {
+		// const userExists = await findOneUser(req.params.userId);
+		const userExists = await User.findOne({ _id: req.params.userId });
+		if (!userExists)
+			throw {
+				error: {
+					status: 404,
+					type: "Non-existence",
+					message: "The user does not exist",
+				},
+			};
+
+		return res.status(200).send(userExists);
+	} catch (err) {
+		if (process.env.NODE_ENV === "dev") console.error(err);
+		return res.status(400).send(err);
+	}
+};
+
 module.exports.user_detail_get = async (req, res) => {
 	try {
 		// const userExists = await findOneUser(req.params.userId);
@@ -86,70 +143,42 @@ module.exports.user_detail_get = async (req, res) => {
 
 		return res.status(200).send(user);
 	} catch (err) {
-		console.error(err);
+		if (process.env.NODE_ENV === "dev") console.error(err);
 		return res.status(400).send(err);
 	}
 };
 
 /** //* Controls PROFILE UPDATE PATCH requests.
  *
- * PATCH body: { _id: , firstName: , middleName: , lastName: , bio: , dateOfBirth: , password: ,}
+ * PATCH body: { firstName: , middleName: , lastName: , bio: , dateOfBirth: , password: ,}
  */
 module.exports.update_user_patch = async (req, res) => {
 	try {
-		const { error } = updateUserValidation(req.body);
-		if (error)
-			throw {
-				error: {
-					message: error.details[0].message,
-				},
-			};
+		const { error } = await updateUserValidation(req.body);
+		if (error) throw validationError(error);
 
-		// console.log(req.user);
+		const userToUpdate = await await (await User.findOne({ _id: req.params.userId })).toJSON();
+		if (!userToUpdate) throw nonExistenceError("user");
 
-		const userFound = await User.findOne({ _id: req.params.userId });
-		if (!userFound)
-			throw {
-				error: {
-					status: 404,
-					message: "associated user not found",
-				},
-			};
+		const validPass = await bcrypt.compare(req.body.password, userToUpdate.password);
+		if (!validPass) throw wrongPwError;
 
-		// Check if req user is owner of the user account to be updated
-		if (req.user._id != userFound._id)
-			throw {
-				error: {
-					status: 401,
-					type: "Access Denied!",
-					message: "You do not have permission to edit this!",
-				},
-			};
+		// update only supplied fields
+		let updateQuery = { $set: {} };
 
-		//check password
-		const validPass = await bcrypt.compare(req.body.password, userFound.password);
-		if (!validPass)
-			throw {
-				error: { status: 401, type: "Authentication failure", message: "Wrong Password." },
-			};
-
-		// check which key needs upgrading
-		let query = { $set: {} };
 		for (let key in req.body) {
-			if (userFound[key] && userFound[key] !== req.body[key])
-				//first check if userFound[key] exists && check value different
-				query.$set[key] = req.body[key]; // creates a $set object with keys that have different values
+			if (key != "password") {
+				if (userToUpdate[key] === null) updateQuery.$set[key] = req.body[key];
+				else if (userToUpdate[key] && userToUpdate[key] !== req.body[key])
+					updateQuery.$set[key] = req.body[key]; //first check if userToUpdate[key] exists && check value different then creates a $set object with keys that have different values
+			}
 		}
 
-		// update the profile
-		const updatedProfile = await User.updateOne(
-			{
-				_userId: req.user._id,
-			},
-			query //using $set method here to update values
+		// ? UPDATE USER
+		await User.updateOne(
+			{ _id: userToUpdate._id },
+			updateQuery //using $set method here to update values
 		);
-
-		// console.log(updatedProfile);
 
 		return res.status(200).send({
 			Success: {
@@ -158,7 +187,7 @@ module.exports.update_user_patch = async (req, res) => {
 			},
 		});
 	} catch (err) {
-		console.error(err);
+		if (process.env.NODE_ENV === "dev") console.error(err);
 		return res.status(400).send(err);
 	}
 };
@@ -204,7 +233,7 @@ module.exports.upload_user_images_patch = async (req, res) => {
 			}
 		});
 	} catch (err) {
-		console.error(err);
+		if (process.env.NODE_ENV === "dev") console.error(err);
 		return res.status(400).send(err);
 	}
 };
