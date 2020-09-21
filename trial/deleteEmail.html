@@ -1,0 +1,101 @@
+`
+<html>
+	<head>
+		<style>
+			body {
+				font-family: "Muli", sans-serif;
+				font-size: 20px;
+			}
+
+			p.custom {
+				line-height: 1.5;
+				text-align: left;
+				margin: 0 2rem;
+			}
+
+			h1.custom {
+				font-family: "Libre Baskerville", serif;
+				font-size: 3em;
+				font-weight: bold;
+				text-align: center;
+			}
+
+			div.container {
+				margin: 10vh 5vw;
+				padding: 1rem;
+				display: flex;
+				justify-content: center;
+			}
+
+			div.custom {
+				padding: 35px;
+				display: grid;
+				border-style: solid;
+				border-color: #000000;
+				border-radius: 1em;
+				min-width: 80%;
+			}
+
+			button.outline {
+				position: relative;
+				background: transparent;
+				color: black;
+				font-size: 14px;
+				border-color: black;
+				border-style: solid;
+				border-width: 3px;
+				border-radius: 10px;
+				padding: 10px 40px;
+				margin: 10px 0px;
+				text-transform: uppercase;
+				transition: all 0.2s linear;
+			}
+			button.outline:hover {
+				color: white;
+				background: black;
+				border-color: white;
+				transition: all 0.2s linear;
+			}
+
+			button.outline:active {
+				border-radius: 22px;
+			}
+		</style>
+	</head>
+	<body>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Muli:wght@400;700&display=swap"
+			rel="stylesheet"
+		/>
+		<div class="container">
+			<div class="custom">
+				<h1 class="custom">Account Deletion</h1>
+				<p class="custom">
+					Dear <strong>${user.username}</strong>,<br />
+					A request for deletion of your
+					<strong>Scholarr</strong> account <strong>'${user.email}'</strong> has been
+					issued. <br /><br />
+					Please Use the following Token to delete your account. (Note: Token is only
+					valid for 10 minutes)<br />
+					<strong>${token.token}</strong><br /><br />
+					Please click the following link to go to delete account form.<a
+						href="http:\/\/${req.headers.host}\/api\/auth\/delete_account\/${token.token}"
+					>
+						<strong>Click here</strong></a
+					>.<br />
+					Or, copy the following link into your browser:<br />
+					<strong>
+						http:\/\/${req.headers.host}\/api\/auth\/delete_account\/${token.token} </strong
+					><br /><br />
+					If this was not done by you, please secure your account. However, if not the
+					case We hope you had a wonderful time using our services. We feel obliged to
+					have been of use and wish to see you here again. Have a nice day!
+					<br /><br />
+					Sincerely,
+					<br />
+					<strong> The Scholarr Team </strong>
+				</p>
+			</div>
+		</div>
+	</body>
+</html>

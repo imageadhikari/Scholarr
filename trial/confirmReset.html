@@ -1,0 +1,66 @@
+<html>
+	<head>
+		<style>
+			p.custom {
+				font-family: "Muli", sans-serif;
+				font-size: 20px;
+				line-height: 1.5;
+			}
+
+			h1.custom {
+				font-family: "Libre Baskerville", serif;
+				font-size: 2.5em;
+				font-weight: bold;
+				justify-content: center;
+			}
+
+			div.container {
+				margin: 10vh 5vw;
+				display: flex;
+				justify-content: center;
+			}
+
+			div.custom {
+				padding: 35px;
+				display: grid;
+				/* justify-content: center; */
+				border-style: solid;
+				border-color: #000000;
+				border-radius: 1em;
+				min-width: 80%;
+			}
+		</style>
+	</head>
+	<body>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Muli:wght@400;700&display=swap"
+			rel="stylesheet"
+		/>
+		<div class="container">
+			<div class="custom">
+				<h1 class="custom">Reset your e-mail address</h1>
+				<p class="custom">
+					Dear <strong>${user.username}</strong>,<br />
+					You are recieving this email because of a request for password reset for your
+					<strong>Scholarr</strong> account <strong>'${user.email}'</strong>. Please click
+					the following link to reset your password<br />
+					<a
+						href="http:\/\/${req.headers.host}\/\/api\/user\/reset_password\/${token.token}"
+					>
+						<strong>Click here</strong></a
+					><br />
+					Or, copy the following link into your browser:<br />
+					<strong>
+						http:\/\/${req.headers.host}\/\/api\/user\/reset_password\/${token.token}
+					</strong>
+					<br /><br />
+					Sincerely,
+					<br />
+					<strong>
+						The Scholarr Team
+					</strong>
+				</p>
+			</div>
+		</div>
+	</body>
+</html>
